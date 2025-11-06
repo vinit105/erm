@@ -42,6 +42,7 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.5.2
   flutter_launcher_icons: ^0.14.4
+  connectivity_plus: ^7.0.0
 
 dev_dependencies:
   flutter_test:
@@ -95,3 +96,17 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"  # <- put your logo here
+  min_sdk_android: 21
+  remove_alpha_ios: true
+  adaptive_icon_background: "#ffffff"  # Optional for Android 8.0+
+  adaptive_icon_foreground: "assets/logo.png"
+  web:
+    generate: false
+  windows:
+    generate: false
+  macos:
+    generate: false

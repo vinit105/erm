@@ -1,15 +1,25 @@
-import 'package:erm/feature/dashboard/presentation/screens/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 
 import 'feature/auth/application/provider/auth_provider.dart';
 import 'feature/auth/presentation/screens/login_screen.dart';
+import 'feature/dashboard/presentation/screens/dashboard_screen.dart';
+import 'feature/internet_checker/application/internet_checker_provider.dart';
+import 'feature/internet_checker/presentation/internet_checker_wrapper.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => InternetProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -17,14 +27,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => AuthProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'ECS System',
-        theme: ThemeData(primarySwatch: Colors.indigo),
-        home: const AuthGate(),
-      ),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ECS System',
+      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      home: const ConnectionWrapper(child: AuthGate()),
     );
   }
 }
@@ -34,14 +41,16 @@ class AuthGate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final auth = Provider.of<AuthProvider>(context, listen: false);
 
-    return StreamBuilder(
+    return StreamBuilder<AuthState>(
       stream: auth.authState,
-      builder: (_, snapshot) {
-        if (snapshot.data == AuthState.authenticated) {
+      builder: (context, snapshot) {
+        final state = snapshot.data;
+
+        if (state == AuthState.authenticated) {
           return const DashboardScreen();
-        } else if (snapshot.data == AuthState.unauthenticated) {
+        } else if (state == AuthState.unauthenticated) {
           return const LoginScreen();
         } else {
           return const Scaffold(
