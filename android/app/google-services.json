@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "950535486393",
+    "project_id": "erm-maxah",
+    "storage_bucket": "erm-maxah.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950535486393:android:19b27dbbbb3978cabe1468",
+        "android_client_info": {
+          "package_name": "com.maxah.erm.erm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxlkNdmsYo_W3q-tPG5XvUapAe5IfAaEY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
