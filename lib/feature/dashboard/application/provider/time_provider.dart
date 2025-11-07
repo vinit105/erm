@@ -10,25 +10,36 @@ import '../../domain/repository/time_repository.dart';
 
 class TimerProvider extends ChangeNotifier {
   final String? userId;
-  final ITimeRepository
-  _repository; // we will create a concrete impl and inject via optional param or service locator
+  final ITimeRepository _repository;
 
   TimerProvider(this.userId, [ITimeRepository? repository])
     : _repository = repository ?? RemoteTimeRepository.instance;
 
   bool _running = false;
+  bool _loading = false;
   Duration _elapsed = Duration.zero;
   Timer? _ticker;
   DateTime? _start;
 
   bool get running => _running;
+  bool get loading => _loading;
+
+  setLoading(bool value) {
+    _loading = value;
+    notifyListeners();
+  }
+
   Duration get elapsed => _elapsed;
 
   void start() {
     if (userId == null) throw AuthException('User not logged in');
-    if (_running) return;
+
+    if (_running) return; // already running
+
     _running = true;
-    _start = DateTime.now();
+    // ✅ if paused, resume from previous elapsed time
+    _start = DateTime.now().subtract(_elapsed);
+
     _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
       _elapsed = DateTime.now().difference(_start!);
       notifyListeners();
@@ -39,6 +50,7 @@ class TimerProvider extends ChangeNotifier {
   void pause() {
     if (!_running) return;
     _ticker?.cancel();
+    _elapsed = DateTime.now().difference(_start!); // keep elapsed
     _running = false;
     notifyListeners();
   }
@@ -50,6 +62,7 @@ class TimerProvider extends ChangeNotifier {
     if (_start == null) return;
     _ticker?.cancel();
     final end = DateTime.now();
+
     final entry = TimeEntryModel(
       id: const Uuid().v4(),
       userId: userId!,
@@ -59,6 +72,7 @@ class TimerProvider extends ChangeNotifier {
       end: end,
       duration: end.difference(_start!),
     );
+
     try {
       await _repository.addTimeEntry(entry);
     } catch (e) {

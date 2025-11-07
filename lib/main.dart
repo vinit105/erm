@@ -1,3 +1,4 @@
+import 'package:erm/feature/dashboard/application/provider/time_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => InternetProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => TimerProvider("")),
       ],
       child: const MyApp(),
     ),

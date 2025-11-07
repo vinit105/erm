@@ -19,15 +19,14 @@ class TimeRemoteDataSource {
   ) async {
     final startOfDay = DateTime(date.year, date.month, date.day);
     final endOfDay = startOfDay.add(const Duration(days: 1));
+
     final q = await _col
         .where('userId', isEqualTo: userId)
-        .where(
-          'start',
-          isGreaterThanOrEqualTo: startOfDay.toUtc().toIso8601String(),
-        )
-        .where('start', isLessThan: endOfDay.toUtc().toIso8601String())
+        .where('start', isGreaterThanOrEqualTo: Timestamp.fromDate(startOfDay))
+        .where('start', isLessThan: Timestamp.fromDate(endOfDay))
         .orderBy('start', descending: true)
         .get();
+
     return q.docs
         .map(
           (d) => TimeEntryModel.fromMap(

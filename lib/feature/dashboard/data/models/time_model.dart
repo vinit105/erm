@@ -1,23 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/time_entry.dart';
 
 class TimeEntryModel extends TimeEntry {
   TimeEntryModel({
-    required String id,
-    required String userId,
-    required String title,
-    String? description,
-    required DateTime start,
-    required DateTime end,
-    required Duration duration,
-  }) : super(
-         id: id,
-         userId: userId,
-         title: title,
-         description: description ?? '',
-         start: start,
-         end: end,
-         duration: duration,
-       );
+    required super.id,
+    required super.userId,
+    required super.title,
+    required super.description,
+    required super.start,
+    required super.end,
+    required super.duration,
+  });
 
   Map<String, dynamic> toMap() {
     return {
@@ -25,23 +18,21 @@ class TimeEntryModel extends TimeEntry {
       'userId': userId,
       'title': title,
       'description': description,
-      'start': start.toUtc().toIso8601String(),
-      'end': end.toUtc().toIso8601String(),
-      'durationSeconds': duration.inSeconds,
+      'start': Timestamp.fromDate(start),
+      'end': Timestamp.fromDate(end),
+      'duration': duration.inSeconds,
     };
   }
 
   factory TimeEntryModel.fromMap(Map<String, dynamic> map) {
-    final start = DateTime.parse(map['start']).toLocal();
-    final end = DateTime.parse(map['end']).toLocal();
     return TimeEntryModel(
       id: map['id'],
       userId: map['userId'],
       title: map['title'],
-      description: map['description'] ?? '',
-      start: start,
-      end: end,
-      duration: Duration(seconds: map['durationSeconds'] ?? 0),
+      description: map['description'],
+      start: (map['start'] as Timestamp).toDate(),
+      end: (map['end'] as Timestamp).toDate(),
+      duration: Duration(seconds: map['duration']),
     );
   }
 }
