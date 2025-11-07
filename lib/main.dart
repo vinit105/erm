@@ -12,12 +12,16 @@ import 'feature/internet_checker/presentation/internet_checker_wrapper.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => InternetProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => TimerProvider("")),
+        ChangeNotifierProxyProvider<AuthProvider, TimerProvider>(
+          create: (_) => TimerProvider(null),
+          update: (_, auth, previous) => TimerProvider(auth.userId),
+        ),
       ],
       child: const MyApp(),
     ),
