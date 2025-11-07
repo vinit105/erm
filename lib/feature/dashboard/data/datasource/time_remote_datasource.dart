@@ -17,8 +17,16 @@ class TimeRemoteDataSource {
     String userId,
     DateTime date,
   ) async {
-    final startOfDay = DateTime(date.year, date.month, date.day);
-    final endOfDay = startOfDay.add(const Duration(days: 1));
+    final localStart = DateTime(date.year, date.month, date.day);
+    final localEnd = localStart.add(const Duration(days: 1));
+
+    // Convert to UTC for Firestore consistency
+    final startOfDay = DateTime.utc(
+      localStart.year,
+      localStart.month,
+      localStart.day,
+    );
+    final endOfDay = DateTime.utc(localEnd.year, localEnd.month, localEnd.day);
 
     final q = await _col
         .where('userId', isEqualTo: userId)
